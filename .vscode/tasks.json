@@ -1,0 +1,28 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileBasenameNoExtension}.exe",
+                "-LC:mingw64/lib",
+                "-lSDL2main",
+                "-lSDL2",
+                // "-lSDL_bgi",
+                // "-lSDL_image",
+                "-lSDL2_ttf",
+                "-lSDL2_mixer",
+                "-lmingw32"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

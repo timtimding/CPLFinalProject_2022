@@ -1,29 +1,29 @@
 #include <bits/stdc++.h>
-#typedef unsigned long time_t
-time_t time(time_t* ptr);
-int seed = time(0);
+#include "ClassPeopleTest0.h"
+// #typedef unsigned long time_t
+// time_t time(time_t* ptr);
+
 
 template <typename T>   //to cope with different roles
 
 class villager{
+    friend int main();
     private:
         int x, y;           // Coordinate of the role
         int hp;             //Health points
         int attackDamage;   //Attack damage
         int speed;          //Moving speed
+        bool poisoned;
     public:
         villager(int coordy);
         ~villager();
         void attack(T x);
         void move(unsigned long long dt);
-
 };
-villager::villager(int coordy){
-    x = srand(seed) % 50 + 50;    //in the same block, but accurate position is slightly different
-    y = coordy * 50+ srand(seed) % 50;
+
+villager::~villager(){
+    delete[] *this;
 }
-~villager(){
-    
-}
+
 void attack(T x){x.hp -= attackDamage;}
-void villager::move(unsigned long long dt) {x -= speed * dt;}
+void villager::move() {x -= speed;}

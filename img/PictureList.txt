@@ -1,0 +1,23 @@
+
+img/Welcome.png WELCOME
+img/really.png ALERT
+img/menu.png MENU
+img/StartPlayingButton.png STARTPLAYINGBUTTON
+img/SettingButton.png SETTINGBUTTON
+img/TutorialButton.png TUTORIALBUTTON
+img/BackButton.png BACKBUTTON
+img/Setting.png SETTING
+img/Dragger.png DRAGGER
+img/SoundBar.png SOUNDBAR
+img/SoundStatus.png SOUNDSTATUS
+img/SoundOn.png SOUNDON
+img/SoundOff.png SOUNDOFF
+img/Tutorial.png TUTORIAL
+img/Selector.png SELECTOR
+img/Level1.png LEVEL1
+img/Level2.png LEVEL2
+img/Level3.png LEVEL3
+img/Level4.png LEVEL4
+img/Level5.png LEVEL5
+img/Corianderbg.png CORIANDER
+img/sample.bmp SAMPLE

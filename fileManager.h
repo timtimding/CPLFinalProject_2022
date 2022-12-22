@@ -10,5 +10,8 @@
 bool loadSrc();
 
 bool loadFonts();
+
+void saveProgress(int[]);
+
 #endif // FILEMANAGER_H
 

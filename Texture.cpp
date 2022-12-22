@@ -2,22 +2,49 @@
 
 lTexture TextureSet[SAMPLE + 1], gTextTexture;
 
+lTexture MovementSet[MOVEMENTTOTAL];
+
+lTexture AttackSet[ATTACKTOTAL];
+
 SDL_Window* gWindow = NULL;
 
 SDL_Renderer* gRenderer = NULL;
 
+Mix_Music *gMusic = NULL;
+
 TTF_Font* gFont = NULL;
+
+SDL_Color textColor = {0, 0, 0, 255};
 
 int SoundLoud = 50;
 
 bool SoundOn = true;
 
+std::stringstream writeText;
+
 bool IsSound(){
     return SoundOn;
 }
 
+int getSound(){
+    return SoundLoud;
+}
+
+void setSoundOn(bool sd){
+    SoundOn = sd;
+}
+
+void setSoundLoud(int n){
+    SoundLoud = n;
+}
+
 void SoundSwitch(bool s){
+    int temp;
     SoundOn = s;
+    if(!s)
+        temp = Mix_VolumeMusic(0);
+    else
+        temp = Mix_VolumeMusic(SoundLoud);
 }
 
 bool leaveAlert(SDL_Event *e){
@@ -54,7 +81,7 @@ bool init()
 	bool success = true;
 
 	//Initialize SDL
-	if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 )
 	{
 		printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
 		success = false;
@@ -66,9 +93,8 @@ bool init()
 		{
 			printf( "Warning: Linear texture filtering not enabled!" );
 		}
-
-		//Create window
-		gWindow = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		gWindow = SDL_CreateWindow( "No Coriander!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		//SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN);
 		if( gWindow == NULL )
 		{
 			printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
@@ -88,7 +114,9 @@ bool init()
 				//Initialize renderer color
 				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 
-				//Initialize PNG loading
+				//Initialize Audio;
+                Mix_OpenAudio(MIX_DEFAULT_FREQUENCY,AUDIO_S16, 2, 2048);
+
 				int imgFlags = IMG_INIT_PNG;
 				if( !( IMG_Init( imgFlags ) & imgFlags ) )
 				{
@@ -112,8 +140,16 @@ void close()
 	//Free loaded images
 	for(int i = 0; i < SAMPLE; i++)
         TextureSet[i].free();
+    gTextTexture.free();
+    //for(int i = 0; i < TOTAL; i++)
+    //    MovementSet[i].free();
 
     TTF_CloseFont( gFont );
+	gFont = NULL;
+	Mix_FreeMusic(gMusic);
+	gMusic = NULL;
+
+	TTF_CloseFont(gFont);
 	gFont = NULL;
 
 	//Destroy window
@@ -123,9 +159,10 @@ void close()
 	gRenderer = NULL;
 
 	//Quit SDL subsystems
+	TTF_Quit();
+	Mix_Quit();
 	IMG_Quit();
 	SDL_Quit();
-
 }
 int distance(int x, int m, int y, int n){
     return ((x - m)*(x - m) + (y - n)*(y - n));
@@ -166,15 +203,15 @@ bool handleEvent(SDL_Event *e, Picture n){
                 return false;
             break;
         case PAUSE:
-            if(x >= SCREEN_WIDTH * 5 / 6 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH * 5 / 6 + TextureSet[n].getWidth() / 2 && \
-            y >= SCREEN_HEIGHT / 5 - TextureSet[n].getHeight() / 2 && y <= SCREEN_HEIGHT / 5 + TextureSet[n].getHeight() / 2)
+            if(x >= SCREEN_WIDTH * 7 / 8 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH * 7 / 8 + TextureSet[n].getWidth() / 2 && \
+            y >= SCREEN_HEIGHT / 10 - TextureSet[n].getHeight() / 2 && y <= SCREEN_HEIGHT / 10 + TextureSet[n].getHeight() / 2)
                 return true;
             else
                 return false;
             break;
         case HELP:
-            if(x >= SCREEN_WIDTH * 5 / 6 - TextureSet[n].getWidth() / 2 + 90 && x <= SCREEN_WIDTH * 5 / 6 + TextureSet[n].getWidth() / 2 + 90&& \
-            y >= SCREEN_HEIGHT / 5 - TextureSet[n].getHeight() / 2 && y <= SCREEN_HEIGHT / 5 + TextureSet[n].getHeight() / 2)
+            if(x >= SCREEN_WIDTH * 7 / 8 - TextureSet[n].getWidth() / 2 + 90 && x <= SCREEN_WIDTH * 7 / 8 + TextureSet[n].getWidth() / 2 + 90 && \
+            y >= SCREEN_HEIGHT / 10 - TextureSet[n].getHeight() / 2 && y <= SCREEN_HEIGHT / 10 + TextureSet[n].getHeight() / 2)
                 return true;
             else
                 return false;
@@ -229,39 +266,75 @@ bool handleEvent(SDL_Event *e, Picture n){
                 return false;
             break;
         case LEAVE:
-            if(x >= SCREEN_WIDTH / 2 - 150 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH / 2 - 150 + TextureSet[n].getWidth() / 2 && \
+            if(x >= SCREEN_WIDTH / 2 - 100 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH / 2 - 100 + TextureSet[n].getWidth() / 2 && \
             y >= SCREEN_HEIGHT / 2 - TextureSet[n].getHeight() / 2 && y <= SCREEN_HEIGHT / 2 + TextureSet[n].getHeight() / 2)
                 return true;
             else
                 return false;
             break;
-        case SOUNDON:
-            if(x >= SCREEN_WIDTH / 2 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH / 2 + TextureSet[n].getWidth() / 2 && \
-            y >= SCREEN_HEIGHT * 2 / 5 - TextureSet[n].getHeight() / 2 && y <= SCREEN_HEIGHT * 2 / 5 + TextureSet[n].getHeight() / 2)
-                return true;
-            else
-                return false;
-            break;
         case RESTART:
-            if(x >= SCREEN_WIDTH / 2 - 50 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH / 2 - 50 + TextureSet[n].getWidth() / 2 && \
+            if(x >= SCREEN_WIDTH / 2 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH / 2 + TextureSet[n].getWidth() / 2 && \
             y >= SCREEN_HEIGHT / 2 - TextureSet[n].getHeight() / 2 && y <= SCREEN_HEIGHT / 2 + TextureSet[n].getHeight() / 2)
                 return true;
             else
                 return false;
             break;
         case RESUME:
-            if(x >= SCREEN_WIDTH / 2 + 50 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH / 2 + 50 + TextureSet[n].getWidth() / 2 && \
+            if(x >= SCREEN_WIDTH / 2 + 100 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH / 2 + 100 + TextureSet[n].getWidth() / 2 && \
             y >= SCREEN_HEIGHT / 2 - TextureSet[n].getHeight() / 2 && y <= SCREEN_HEIGHT / 2 + TextureSet[n].getHeight() / 2)
                 return true;
             else
                 return false;
             break;
+        case SOUNDON:
+            if(x >= SCREEN_WIDTH / 2 - 50 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH / 2 - 50 + TextureSet[n].getWidth() / 2 && \
+            y >= SCREEN_HEIGHT * 2 / 5 - TextureSet[n].getHeight() / 2 && y <= SCREEN_HEIGHT * 2 / 5 + TextureSet[n].getHeight() / 2)
+                return true;
+            else
+                return false;
+            break;
         case DRAGGER:
-            return(!(distance(x, SCREEN_WIDTH / 2 + TextureSet[SOUNDBAR].getWidth() * (SoundLoud - 50) / 100, y, SCREEN_HEIGHT * 3 / 5 - TextureSet[SOUNDBAR].getHeight() / 2) > ( TextureSet[n].getWidth() / 2) * (TextureSet[n].getWidth() / 2)));
+            return(!(distance(x, SCREEN_WIDTH / 2 + (SoundLoud - 64) * TextureSet[SOUNDBAR].getWidth() / 128, \
+                y, SCREEN_HEIGHT * 3 / 5) > ( TextureSet[n].getWidth() / 2) * (TextureSet[n].getWidth() / 2)));
             break;
         case SOUNDBAR:
-            return(x <= SCREEN_WIDTH / 2 + TextureSet[SOUNDBAR].getWidth() / 2 && x >= SCREEN_WIDTH / 2 - TextureSet[SOUNDBAR].getWidth() / 2 && y >= SCREEN_HEIGHT * 3 / 5 - TextureSet[SOUNDBAR].getHeight() / 2 && y <= SCREEN_HEIGHT * 3 / 5 + TextureSet[SOUNDBAR].getHeight() / 2);
+            return(x <= SCREEN_WIDTH / 2 + TextureSet[SOUNDBAR].getWidth() / 2 && x >= SCREEN_WIDTH / 2 - TextureSet[SOUNDBAR].getWidth() / 2 && \
+                   y >= SCREEN_HEIGHT * 3 / 5 - TextureSet[SOUNDBAR].getHeight() / 2 && y <= SCREEN_HEIGHT * 3 / 5 + TextureSet[SOUNDBAR].getHeight() / 2);
             break;
+        case ROLEFARMER:
+            if(x >= SCREEN_WIDTH - 90 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH - 90 + TextureSet[n].getWidth() / 2 && \
+            y >= SCREEN_HEIGHT /4 - TextureSet[n].getHeight() / 2 && y <= SCREEN_HEIGHT /4 + TextureSet[n].getHeight() / 2)
+                return true;
+            else
+                return false;
+            break;
+        case ROLEMOB:
+            if(x >= SCREEN_WIDTH - 90 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH  - 90 + TextureSet[n].getWidth() / 2 && \
+            y >= SCREEN_HEIGHT /4 - TextureSet[n].getHeight() / 2 + 95 && y <= SCREEN_HEIGHT /4 + TextureSet[n].getHeight() / 2 + 95)
+                return true;
+            else
+                return false;
+            break;
+        case ROLEFRANK:
+            if(x >= SCREEN_WIDTH - 90 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH - 90 + TextureSet[n].getWidth() / 2 && \
+            y >= SCREEN_HEIGHT /4 - TextureSet[n].getHeight() / 2 + 190 && y <= SCREEN_HEIGHT /4 + TextureSet[n].getHeight() / 2 + 190)
+                return true;
+            else
+                return false;
+            break;
+        case ROLEVAMP:
+            if(x >= SCREEN_WIDTH - 90 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH - 90 + TextureSet[n].getWidth() / 2 && \
+            y >= SCREEN_HEIGHT /4 - TextureSet[n].getHeight() / 2 + 285 && y <= SCREEN_HEIGHT /4 + TextureSet[n].getHeight() / 2 + 285)
+                return true;
+            else
+                return false;
+            break;
+        case ROLEBISHOP:
+            if(x >= SCREEN_WIDTH - 90 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH - 90 + TextureSet[n].getWidth() / 2 && \
+            y >= SCREEN_HEIGHT /4 - TextureSet[n].getHeight() / 2 + 380 && y <= SCREEN_HEIGHT /4 + TextureSet[n].getHeight() / 2 + 380)
+                return true;
+            else
+                return false;
         default:
             break;
     }
@@ -277,13 +350,33 @@ void screenShow(){
     SDL_RenderPresent( gRenderer );
 }
 
-void drawGrayScreen(){
+void DrawGrayScreen(){
     SDL_SetRenderTarget(gRenderer, NULL);
     //SDL_SetTextureAlphaMod( gTexture, 120 );
     SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor( gRenderer, 0, 0, 0, 255 );
 }
 
+void DrawMove(characterTag n, int x, int y, int f){     ///f-> frame (which frame, 0, 1, 2 or 3)
+    SDL_Rect renderQuad = {x - MovementSet[n].getWidth() / 2, y - MovementSet[n].getHeight() / 2, \
+    144 * MovementSet[n].getWidth() / MovementSet[n].getHeight() , 144};
+    SDL_Rect clip = {f * MovementSet[n].getWidth() / 4, 0, MovementSet[n].getWidth() / 4, MovementSet[n].getHeight()};
+    SDL_RenderCopy( gRenderer, MovementSet[n].gTexture, &clip, &renderQuad );
+    std::cout << "Animation!" << std::endl;
+}
+
+void DrawAttack(Attack n, int x, int y, int f){   ///f-> frame (which frame, 0 or 1)
+    SDL_Rect renderQuad = { x * 100 +100, y * 100 + 20, 144 * MovementSet[n].getWidth() / MovementSet[n].getHeight() , 144};
+    SDL_Rect clip = {f * AttackSet[n].getWidth() / 4, 0, AttackSet[n].getWidth() / 4, AttackSet[n].getHeight()};
+    SDL_RenderCopy( gRenderer, AttackSet[n].gTexture, &clip, &renderQuad );
+}
+
+void DrawRole(characterTag t, int x, int y){
+    int n = t - 1 + ROLECORIANDER;
+    SDL_Rect renderQuad = {x - 144 * TextureSet[n].getWidth() / TextureSet[n].getHeight() / 2, \
+    y - 100, 144 * TextureSet[n].getWidth() / TextureSet[n].getHeight() , 144};
+    SDL_RenderCopy( gRenderer, TextureSet[n].gTexture, NULL, &renderQuad );
+}
 
 void Draw(Picture n, int x, int y, int w, int h){
     SDL_Rect renderQuad = { x, y, w, h};
@@ -301,21 +394,21 @@ void Draw(Picture n, int x, int y, int w, int h){
         {
             switch(n){
                 case DRAGGER:
-                    renderQuad.x = SCREEN_WIDTH / 2 + TextureSet[SOUNDBAR].getWidth() * (SoundLoud - 50) / 100- TextureSet[n].getWidth() / 2;
+                    renderQuad.x = SCREEN_WIDTH / 2 + (SoundLoud - 64) * TextureSet[SOUNDBAR].getWidth() / 128 - TextureSet[n].getWidth() / 2;
                     renderQuad.y =  SCREEN_HEIGHT * 3 / 5 - TextureSet[n].getHeight() / 2;
                     renderQuad.w = TextureSet[n].getWidth();
                     renderQuad.h = TextureSet[n].getHeight();
                     break;
-                case SOUNDON:
+                /*case SOUNDON:
                     renderQuad.x = SCREEN_WIDTH / 2 - TextureSet[SOUNDBAR].getWidth() / 2;
                     renderQuad.y = SCREEN_HEIGHT * 3 / 5 - TextureSet[SOUNDBAR].getHeight() / 2;
                     renderQuad.w = TextureSet[SOUNDBAR].getWidth() * SoundLoud / 100;
                     renderQuad.h = TextureSet[SOUNDBAR].getHeight();
-                    break;
+                    break;*/
                 case SOUNDSTATUS:
                     renderQuad.x = SCREEN_WIDTH / 2 - TextureSet[SOUNDBAR].getWidth() / 2;
                     renderQuad.y =  SCREEN_HEIGHT * 3 / 5 - TextureSet[n].getHeight() / 2;
-                    renderQuad.w = TextureSet[SOUNDBAR].getWidth() * SoundLoud / 100;
+                    renderQuad.w = TextureSet[SOUNDBAR].getWidth() * SoundLoud / 128;
                     renderQuad.h = TextureSet[n].getHeight();
                     break;
                 default:
@@ -326,21 +419,31 @@ void Draw(Picture n, int x, int y, int w, int h){
 	SDL_RenderCopy( gRenderer, TextureSet[n].gTexture, NULL, &renderQuad );
 }
 
-void setSound(SDL_Event *e){std::cout << SoundLoud << std::endl;
-    int x, y;
-    while(SDL_PollEvent(e) != 0){
+void showMoney(int num, int x, int y){
+    writeText.str("");
+    writeText << std::setw(5) << "$" << num;
+    gTextTexture.loadFromRenderedText(writeText.str().c_str(), textColor);
+    SDL_Rect renderQuad = {x - gTextTexture.getWidth() / 2,y - gTextTexture.getHeight() / 2, gTextTexture.getWidth(), gTextTexture.getHeight()};
+    SDL_RenderCopy( gRenderer, gTextTexture.gTexture, NULL, &renderQuad );
+}
 
-        if(e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEMOTION){
-            SDL_GetMouseState(&x, &y);
-            if(x < (SCREEN_WIDTH / 2 + TextureSet[SOUNDBAR].getWidth()) || x > (SCREEN_WIDTH / 2 - TextureSet[SOUNDBAR].getWidth())){
-                SoundLoud = (x - (SCREEN_WIDTH / 2 - TextureSet[SOUNDBAR].getWidth()) / TextureSet[SOUNDBAR].getWidth());
-                Draw(SOUNDON, -1, -1, -1, -1);
-                Draw(DRAGGER,-1, -1, -1, -1);
-                screenShow();
+void setSound(SDL_Event *e){
+    int x, y;
+    bool holding = true;
+    while(holding){
+        while(SDL_PollEvent(e) != 0){
+            if(e->type == SDL_MOUSEBUTTONUP)
+                holding = false;
+            if(e->type == SDL_MOUSEMOTION){
+                SDL_GetMouseState(&x, &y);
+                if(x > SCREEN_WIDTH / 2 - TextureSet[SOUNDBAR].getWidth() / 2 && x < SCREEN_WIDTH / 2 + TextureSet[SOUNDBAR].getWidth() / 2){
+                    SoundLoud = 128 * (x - SCREEN_WIDTH / 2 + TextureSet[SOUNDBAR].getWidth() / 2) / TextureSet[SOUNDBAR].getWidth();
+                    SoundSwitch(SoundOn);
+                    RenderSetting(SoundOn);
+                    std::cout << SoundLoud << std::endl;
+                }
             }
         }
-        else
-            return;
     }
 
 }
@@ -348,9 +451,24 @@ void setSound(SDL_Event *e){std::cout << SoundLoud << std::endl;
 void clickSetSound(SDL_Event *e){
     int x, y;
     SDL_GetMouseState(&x, &y);
-    SoundLoud = 100 * (x - SCREEN_WIDTH / 2 + TextureSet[SOUNDBAR].getWidth() / 2) / TextureSet[SOUNDBAR].getWidth();
+    SoundLoud = 128 * (x - SCREEN_WIDTH / 2 + TextureSet[SOUNDBAR].getWidth() / 2) / TextureSet[SOUNDBAR].getWidth();
     std::cout << SoundLoud << std::endl;
     RenderSetting(IsSound());
+}
+
+void playMusic(){
+    std::cout << Mix_PlayMusic(gMusic, -1) << std::endl;
+    printf("%s\n", Mix_GetError());
+}
+
+void pauseMusic(){
+    Mix_PauseMusic();
+    std::cout << "Music Paused!" << std::endl;
+}
+
+void resumeMusic(){
+    Mix_ResumeMusic();
+    std::cout << "Music Resumed!" << std::endl;
 }
 
 lTexture::lTexture(){
@@ -405,6 +523,18 @@ bool loadMedia(std::string path, Picture n)
     bool success = true;
     if(!TextureSet[n].loadFromFile( path ))
         success = false;
+    if(!success)
+        std::cout << path << "error" << std::endl;
+	return success;
+}
+bool loadMusic(const char * path)
+{
+    bool success = true;
+    gMusic = Mix_LoadMUS(path);
+    if(gMusic == NULL){
+        std::cout << path << "error" << std::endl;
+        success = false;
+    }
 	return success;
 }
 

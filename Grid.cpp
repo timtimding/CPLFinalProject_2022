@@ -9,7 +9,6 @@ Grid::Grid(){
     _vegetableNum = 0;
     _gridHumans = NULL;
     _gridVegetables = NULL;
-
 }
 
 
@@ -79,15 +78,19 @@ Grid::~Grid(){
 ///maintain each round/fight on this grid
 void Grid::gridFight(){
     if(_isEmpty){
+        ///std::cout << "EMPTY" << std::endl;
         return;
     }
-    else if(!(_humanNum*_vegetableNum)){
+    else if((_humanNum*_vegetableNum) == 0){
+        //std::cout << "noFight" <<std::endl;
         return;
     }
     else{
+        std::cout << "Attake" <<std::endl;
         ///blood --
         for(int i=0;i<_humanNum;i++){
             for(int j=0;j<_vegetableNum;j++){
+
                 _gridHumans[i].attackEnemy(_gridVegetables[j]);
                 _gridVegetables[j].attackEnemy(_gridHumans[i]);
             }
@@ -149,10 +152,80 @@ void Grid::gridFight(){
         if(!(_humanNum+_vegetableNum)){
             _isEmpty = true;
         }
+        std::cout << "CasualH" << casualtyHuman << std::endl;
+        std::cout << "CasualV " << casualtyVegetable << std::endl;
         return;
+    }
 
+}
+void Grid::set_gridHumans(int humanNum, Character* gridHumans){
+    if(humanNum > 0){
+        set_isEmpty(false);
+        Character* temp = new Character[_humanNum];
+        for(int i=0;i<_humanNum;i++){
+            temp[i] = _gridHumans[i];
+        }
+        delete [] _gridHumans;
+        _gridHumans = new Character[_humanNum+humanNum];
+        for(int i=0;i<_humanNum;i++){
+            _gridHumans[i] = temp[i];
+        }
+
+        for(int i=0+_humanNum;i<humanNum+_humanNum;i++){
+            _gridHumans[i] = gridHumans[i];
+        }
+        _humanNum += humanNum;
+    }
+    else{
+        set_isEmpty(true);
+        _humanNum = 0;
+        delete [] _gridHumans;
+        _gridHumans = NULL;
+    }
+}
+void Grid::set_gridVegetables(int vegetableNum, Character* gridVegetables){
+    if(vegetableNum){
+        set_isEmpty(false);
+        _vegetableNum = vegetableNum;
+        delete [] _gridVegetables;
+        _gridVegetables = new Character[vegetableNum];
+        for(int i=0;i<vegetableNum;i++){
+            _gridVegetables[i] = gridVegetables[i];
+        }
+    }
+    else{
+        set_isEmpty(true);
+        _vegetableNum = 0;
+        delete [] _gridVegetables;
+        _gridVegetables = NULL;
     }
 }
 
-
-
+Grid& Grid::operator=(const Grid& grid){
+        _isEmpty = grid._isEmpty;
+        _pos_x = grid._pos_x;
+        _pos_y = grid._pos_y;
+        _humanNum = grid._humanNum;
+        _vegetableNum = grid._vegetableNum;
+        if(!_humanNum){
+            _gridHumans = NULL;
+        }
+        else{
+            delete [] _gridHumans;
+            _gridHumans = new Character[_humanNum];
+            for(int i=0;i<_humanNum;i++){
+                _gridHumans[i] = grid._gridHumans[i];
+            }
+        }
+        if(!_vegetableNum){
+            _gridVegetables = NULL;
+        }
+        else{
+            delete [] _gridVegetables;
+            _gridVegetables = new Character[_vegetableNum];
+            for(int i=0;i<_vegetableNum;i++){
+                _gridVegetables[i] = grid._gridVegetables[i];
+            }
+        }
+        return *this;
+    }

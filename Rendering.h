@@ -2,16 +2,21 @@
 #define RENDERING_H
 
 #include "Texture.h"
+#include "Grid.h"
 
 void RenderStartSurface();
 
 void RenderMenu();
 
-void RenderSelect(int n[]);
+void RenderSelect(int[]);
 
 void RenderSetting(bool);
 
-void RenderGame();
+void RenderGame(int);
+
+void RenderGame(int, int);
+
+void RenderRoles();
 
 void RenderResult();
 

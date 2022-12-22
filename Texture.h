@@ -5,7 +5,10 @@
 #include "Rendering.h"
 #include <string>
 #include <stdio.h>
+#include <iomanip>
+#include <sstream>
 #include <iostream>
+#include "Character.h"
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
@@ -18,9 +21,27 @@ enum Picture{
     SELECTOR, LEVEL1, LEVEL2, LEVEL3, LEVEL4, LEVEL5, LOCKED,
     GAMEON, PAUSE, HELP, PAUSELIST, LEAVE, RESTART, RESUME,
     GAMERESULT, BACKTOSELECTOR, AGAIN,
-    CORIANDER,
+    ROLECORIANDER, ROLEGARLIC, ROLEPIMENT, ROLESPINACH, ROLEBEANS,
+    PLACEFARMER, PLACEMOB, PLACEFRANK, PLACEVAMP, PLACEBISHOP, ///placing role & standing
+    ROLEFARMER, ROLEMOB, ROLEFRANK, ROLEVAMP, ROLEBISHOP,
+    ROLEFARMERN, ROLEMOBN, ROLEFRANKN, ROLEPVAMPN, ROLEBISHOPN,
     SAMPLE
 };
+enum Movement{
+FARMERMOVE, MOBMOVE, FRANKRMOVE, VAMPMOVE, BISHOPMOVE,
+MOVEMENTTOTAL
+};
+enum Attack{
+    FARMERATTACK, MOBATTACK, FRANKATTACK, VAMPATTACK, BISHOPATTACK,
+    CORIANDERATTACK, GARLICATTACK, PIMENTATTACK, SPINACHATTACK, BEANSATTACK,
+    ATTACKTOTAL
+};
+
+int getSound();
+
+void setSoundOn(bool);
+
+void setSoundLoud(int);
 
 bool init();
 
@@ -32,9 +53,17 @@ void screenShow();
 
 void screenRefresh();
 
-void drawGrayScreen();
+void DrawGrayScreen();
 
 void Draw(Picture, int, int, int, int);
+
+void DrawMove(characterTag, int, int, int);
+
+void DrawRole(characterTag, int, int);
+
+void DrawAttack(Attack, int, int, int);
+
+void showMoney(int, int, int);
 
 void setSound(SDL_Event *);
 
@@ -46,11 +75,29 @@ void SoundSwitch(bool);
 
 bool loadMedia(std::string, Picture);
 
+bool loadMusic(const char *path);
+
 bool loadFont(const char *, int);
+
+void playMusic();
+
+void pauseMusic();
+
+void resumeMusic();
+
+bool handleEvent(SDL_Event *, Picture);
 
 class lTexture{
 friend void Draw(Picture, int, int, int, int);
-friend void RenderSetting();
+
+friend void DrawMove(characterTag, int, int, int);
+
+friend void DrawAttack(Attack, int, int, int);
+
+friend void showMoney(int, int, int);
+
+friend void DrawRole(characterTag, int, int);
+
 public:
     lTexture();
 
@@ -76,6 +123,5 @@ private:
 
 };
 
-bool handleEvent(SDL_Event *, Picture);
 
 #endif // TEXTURE_H

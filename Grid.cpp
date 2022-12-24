@@ -76,23 +76,27 @@ Grid::~Grid(){
 }
 
 ///maintain each round/fight on this grid
-void Grid::gridFight(){
+int Grid::gridFight(){
     if(_isEmpty){
         ///std::cout << "EMPTY" << std::endl;
-        return;
+        return 0;
     }
     else if((_humanNum*_vegetableNum) == 0){
         //std::cout << "noFight" <<std::endl;
-        return;
+        return 0;
     }
     else{
-        std::cout << "Attake" <<std::endl;
         ///blood --
         for(int i=0;i<_humanNum;i++){
             for(int j=0;j<_vegetableNum;j++){
-
-                _gridHumans[i].attackEnemy(_gridVegetables[j]);
-                _gridVegetables[j].attackEnemy(_gridHumans[i]);
+                if(_gridHumans[i].get_data().coolDone()){
+                    _gridHumans[i].attackEnemy(_gridVegetables[j]);
+                    _gridHumans[i].get_data().set_coolStart();
+                }
+                if(_gridVegetables[i].get_data().coolDone()){
+                    _gridVegetables[j].attackEnemy(_gridHumans[i]);
+                    _gridVegetables[j].get_data().set_coolStart();
+                }
             }
         }
         ///check alive
@@ -152,9 +156,7 @@ void Grid::gridFight(){
         if(!(_humanNum+_vegetableNum)){
             _isEmpty = true;
         }
-        std::cout << "CasualH" << casualtyHuman << std::endl;
-        std::cout << "CasualV " << casualtyVegetable << std::endl;
-        return;
+        return casualtyVegetable;
     }
 
 }

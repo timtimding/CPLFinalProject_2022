@@ -12,9 +12,9 @@ void RenderSelect(int[]);
 
 void RenderSetting(bool);
 
-void RenderGame(int);
+void RenderGame(int, uint32_t);
 
-void RenderGame(int, int);
+void RenderGame(int, int, uint32_t);
 
 void RenderRoles();
 

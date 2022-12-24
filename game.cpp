@@ -17,14 +17,48 @@ void Game::endGame(){
     isRunning = false;
 }
 
-void Game::DrawVegetable(){
+void Game::showRole(){
+    static int frameCount = 0;
+    frameCount++;
     for(int i = 0; i < 5; i++)
-        for(int j = 0; j < 7; j++)
-            if(_myGrids[i][j].get_vegetableNum())
+        for(int j = 0; j < 7; j++){
+            if(_myGrids[i][j].get_vegetableNum() > 0){/*
+                if(_myGrids[i][j].get_humanNum() > 0){
+                    if(_myGrids[i][j].get_gridVegetables()[0].get_data().coolRemain() < 150)
+                        DrawAttack(_myGrids[i][j].get_gridVegetables()[0].get_tag(), 241 + j * 114, 144 + i * 108, 1);
+                    else if(_myGrids[i][j].get_gridVegetables()[0].get_data().coolRemain() < 300)
+                        DrawAttack(_myGrids[i][j].get_gridVegetables()[0].get_tag(), 241 + j * 114, 144 + i * 108 , 0);
+                    else
+                        DrawRole(_myGrids[i][j].get_gridVegetables()[0].get_tag(), 241 + j * 114, 144 + i * 108 );
+                }
+            else*/
                 DrawRole(_myGrids[i][j].get_gridVegetables()[0].get_tag(), 241 + j * 114, 144 + i * 108 );
+            }
+
+            for(int k = 0; k < _myGrids[i][j].get_humanNum(); k++){
+                if(_myGrids[i][j].get_vegetableNum() > 0){
+                    if(_myGrids[i][j].get_gridHumans()[k].get_data().coolRemain() < 150)
+                        DrawAttack(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 50, \
+                        160 + i * 108 + ( k - 2) * 5, 1);
+                    else if(_myGrids[i][j].get_gridHumans()[k].get_data().coolRemain() < 300)
+                        DrawAttack(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 50, \
+                        160 + i * 108 + ( k - 2) * 5, 0);
+                    else
+                        DrawRole(_myGrids[i][j].get_gridHumans()[k].get_tag(), \
+                        _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 50, 160 + i * 108 + ( k - 2) * 5);
+                }
+                else if( _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() <= 200 )
+                    DrawRole(_myGrids[i][j].get_gridHumans()[k].get_tag(), \
+                    _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 50, 160 + i * 108 + ( k - 2) * 5);
+                else
+                    DrawMove(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 50, \
+                    160 + i * 108 + ( k - 2) * 5, ((frameCount + _myGrids[i][j].get_gridHumans()[k].get_tag()) / 10) % 4 );
+            }
+        }
+
 }
 
-void Game::DrawHuman(){;}/*{
+/*{
     static int frameCount = 0;
     frameCount++;
     for(int i = 0; i < 5; i++)
@@ -49,15 +83,19 @@ int& GetProgress(){
     return *GameProgress;
 }
 
-void Game::characterMove(){
+        /*for(int i = 0; i < 5; i++)
+            for(int j = 0; j < 7; j++){
+                _myGrids[i][j].gridFight();
+            }*/
+
+int Game::characterMove(){
+    int vegetableKill = 0;
     int totalSum = 0;
     for(int i = 0; i < 5; i++)
         for(int j = 0; j < 7; j++)
             totalSum += _myGrids[i][j].get_humanNum();
     if(totalSum == 0)
-        return;
-    static int frameCount = 0;
-    frameCount++;
+        return 0;
     bool*** toMove = new bool**[5];
     for(int i=0;i<5;i++)
         toMove[i] = new bool*[7];
@@ -68,14 +106,18 @@ void Game::characterMove(){
                     toMove[i][j][k] = false;
         }
     for(int i = 0; i < 5; i++){
+        for(int k = 0; k < _myGrids[i][0].get_humanNum(); k++){
+            if(_myGrids[i][0].get_gridHumans()[k].get_data().get_pos_x() > 200 && _myGrids[i][0].get_vegetableNum() == 0)
+                _myGrids[i][0].get_gridHumans()[k].get_data().c_move();
+        }
         for(int j = 1; j < 7; j++){
             int n = _myGrids[i][j].get_humanNum();
-            std::cout << n;
-            for(int k = 0; k < n; k++){
-                _myGrids[i][j].get_gridHumans()[k].get_data().c_move();
+            if(_myGrids[i][j].get_vegetableNum() == 0)
+                for(int k = 0; k < n; k++){
+                    _myGrids[i][j].get_gridHumans()[k].get_data().c_move();
             }
         }
-            std::cout << std::endl;}
+    }
 
     for(int i = 0;i < 5; i++){
         for(int j=6;j>=1;j--){
@@ -98,56 +140,39 @@ void Game::characterMove(){
                         nStay++;
                     }
                 }
-                int jNum = _myGrids[i][j - 1].get_humanNum();
-                if(jNum > 0){
-                    Character* iMove = new Character[jNum + nMove];
-                    Character* iStay = new Character[nStay];
+                nMove += _myGrids[i][j - 1].get_humanNum();
+                Character* iMove = new Character[nMove];
+                Character* iStay = new Character[nStay];
+                int cMove = _myGrids[i][j - 1].get_humanNum(), cStay = 0;
 
-                    int cMove = 0, cStay = 0;
-                    for(int k = 0; k < _myGrids[i][j].get_humanNum(); k++)
+                //std::cout << "Done" << std::endl;
+                if(_myGrids[i][j - 1].get_humanNum() > 0)
+                    for(int k = 0; k < _myGrids[i][j - 1].get_humanNum(); k++)
                         iMove[k] = _myGrids[i][j - 1].get_gridHumans()[k];
-                    for(int k = 0; k < _myGrids[i][j].get_humanNum(); k++){
-                        if(toMove[i][j][k]){
-                            iMove[_myGrids[i][j - 1].get_humanNum() + cMove] = _myGrids[i][j].get_gridHumans()[k];
-                            cMove++;
-                        }
-                        else{
-                            iStay[cStay] = _myGrids[i][j].get_gridHumans()[k];
-                            cStay++;
-                        }
-                    }
 
-                    _myGrids[i][j].set_gridHumans(0,NULL);
-                    _myGrids[i][j].set_gridHumans(nStay, iStay);
-                    _myGrids[i][j-1].set_gridHumans(0,NULL);
-                    _myGrids[i][j-1].set_gridHumans(jNum + nMove, iMove);
-                    delete [] iStay;
-                    delete [] iMove;
-                }
-                else{
-                    int cMove = 0, cStay = 0;
-                    Character* iMove = new Character[nMove];
-                    Character* iStay = new Character[nStay];
-                    for(int k = 0; k < _myGrids[i][j].get_humanNum(); k++){
-                        if(toMove[i][j][k]){
-                            iMove[cMove] = _myGrids[i][j].get_gridHumans()[k];
-                            cMove++;
-                        }
-                        else{
-                            iStay[cStay] = _myGrids[i][j].get_gridHumans()[k];
-                            cStay++;
-                        }
+                for(int k = 0; k < _myGrids[i][j].get_humanNum(); k++){
+                    if(toMove[i][j][k]){
+                        iMove[cMove] = _myGrids[i][j].get_gridHumans()[k];
+                        cMove++;
                     }
-
-                    _myGrids[i][j].set_gridHumans(0,NULL);
-                    _myGrids[i][j].set_gridHumans(nStay, iStay);
-                    _myGrids[i][j-1].set_gridHumans(0,NULL);
-                    _myGrids[i][j-1].set_gridHumans(nMove, iMove);
-                    delete [] iStay;
-                    delete [] iMove;
+                    else{
+                        iStay[cStay] = _myGrids[i][j].get_gridHumans()[k];
+                        cStay++;
+                    }
                 }
+
+                _myGrids[i][j].set_gridHumans(0,NULL);
+                _myGrids[i][j].set_gridHumans(nStay, iStay);
+                _myGrids[i][j-1].set_gridHumans(0,NULL);
+                _myGrids[i][j-1].set_gridHumans(nMove, iMove);
+                delete [] iStay;
+                delete [] iMove;
             }
     delete [] toMove;
+    for(int i = 0; i < 5; i++)
+            for(int j = 0; j < 7; j++)
+                vegetableKill += _myGrids[i][j].gridFight();
+    return vegetableKill;
 }
 
 void Game::initialize(){
@@ -231,18 +256,19 @@ void Game::Settings(){
                 else if(IsSound()){
                     if(handleEvent(&event, SOUNDON)){
                         SoundSwitch(false);
-                        RenderSetting(false);
+                        RenderSetting(IsSound());
                     }
                 }
                 else if(!IsSound())
                     if(handleEvent(&event, SOUNDON)){
                         SoundSwitch(true);
-                        RenderSetting(true);
+                        RenderSetting(IsSound());
                     }
             }
             else if(event.type == SDL_QUIT){
                 if(leaveAlert(&event)){
                     endGame();
+                    close();
                 }
                 else{
                     RenderSetting(IsSound());
@@ -308,13 +334,16 @@ void Game::Select(){
 
 void Game::GameOn(int n){
     int money = 0;
-    bool isPlacing = false, GameWin = false, ending = false;
+    bool GameWin = false, ending = false;
     uint32_t startTime, frameTick, timeLeft, pauseTime;
-    RenderGame(money);
+    RenderGame(money, startTime);
     startTime = SDL_GetTicks();
     char c;
     std::ifstream inputFile;
     inputFile.open("img/gameData.dat", std::ios::in);
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < 5; j++)
+            inputFile.ignore(20, '\n');
     for(int i=0;i<5;i++){
         for(int j=0;j<7;j++){
             inputFile.get(c);
@@ -356,28 +385,18 @@ void Game::GameOn(int n){
     while(isRunning){
         if(money < 3200)
             money++;
-        for(int i = 0; i < 5; i++)
-            for(int j = 0; j < 7; j++){
-                _myGrids[i][j].gridFight();
-            }
-        characterMove();
-        RenderGame(money);
-        DrawVegetable();
-        DrawHuman();
+        money += 80 * characterMove();
+        RenderGame(money, startTime);
+        showRole();
         screenShow();
         isMoved = true;
         while(SDL_PollEvent(&event) != 0){
             if(isMoved)
                 isMoved = false;
             else{
-                for(int i = 0; i < 5; i++)
-                    for(int j = 0; j < 7; j++){
-                        _myGrids[i][j].gridFight();
-                    }
-                RenderGame(money);
-                characterMove();
-                DrawVegetable();
-                DrawHuman();
+                RenderGame(money, startTime);
+                money += 80 * characterMove();
+                showRole();
                 screenShow();
             }
             if(money < 4000)
@@ -407,23 +426,21 @@ void Game::GameOn(int n){
                     pauseTime = SDL_GetTicks();
                     this -> GamePause(n);
                     startTime += (SDL_GetTicks() - pauseTime);
-                    RenderGame(money);
-                    DrawVegetable();
-                    DrawHuman();
+                    RenderGame(money, startTime);
+                    showRole();
                     screenShow();
                 }
                 else if(handleEvent(&event, HELP))
                 {
                     this -> Tutorial();
-                    RenderGame(money);
-                    DrawVegetable();
-                    DrawHuman();
+                    RenderGame(money, startTime);
+                    showRole();
                     screenShow();
                 }
                 for(int i = 0; i < 5; i++){
                     if(money >= arrMoney[i] * 5 && handleEvent(&event, (Picture)(ROLEFARMER + i))){
                         if(placeRole(i, startTime, money))
-                            money -= arrMoney[i] * 5;
+                            money -= arrMoney[i] * 4;
                     }
                 }
             }
@@ -444,18 +461,16 @@ void Game::GameOn(int n){
             timeLeft = SDL_GetTicks() - frameTick;
             if(timeLeft < frameDelay)
                 SDL_Delay(frameDelay - timeLeft);
-            RenderGame(money);
-            DrawVegetable();
-            DrawHuman();
+            RenderGame(money, startTime);
+            showRole();
             screenShow();
         }
         if(SDL_GetTicks() - startTime >= 1000*120){
                 isRunning = false;
                 GameWin = false;
         }
-        RenderGame(money);
-        DrawVegetable();
-        DrawHuman();
+        RenderGame(money, startTime);
+        showRole();
         screenShow();
     }
     if(ending)
@@ -467,18 +482,13 @@ void Game::GameOn(int n){
 
 bool Game::placeRole(int i,uint32_t timer, int &money){
     bool isMoved = false;
-    int frametime;
     bool isPlacing = true;
-    RenderGame(i, money);
-    DrawVegetable();
-    DrawHuman();
+    RenderGame(i, money, timer);
+    showRole();
     while(isPlacing){
         if(money < 3200)
             money++;
-        characterMove();
-        for(int k = 0; k < 5; k++)
-            for(int j = 0; j < 7; j++)
-                _myGrids[k][j].gridFight();
+        money += 80 * characterMove();
         isMoved = true;
 
         while(SDL_PollEvent(&event) != 0){
@@ -487,44 +497,40 @@ bool Game::placeRole(int i,uint32_t timer, int &money){
             if(isMoved)
                 isMoved = false;
             else{
-                for(int k = 0; k < 5; k++)
-                    for(int j = 0; j < 7; j++)
-                        _myGrids[k][j].gridFight();
-                characterMove();
+                money += 80 * characterMove();
             }
             if(event.type == SDL_MOUSEBUTTONDOWN){
                 int x, y, gridY;
                 SDL_GetMouseState(&x, &y);
-                x = ((x - 184) / 114) * 114 + 241;
                 gridY = (y - 95) / 108;
                 y = gridY * 108 + 144;
                 isPlacing = false;
-                if(gridY < 0 || gridY >= 5)
+                if(gridY < 0 || gridY >= 5 || x > 960 || x < 500)
                     return false;
                 else{
                     switch(i){
                         case 0:{
-                            Farmer farmer(x, y);
+                            Farmer farmer(930, y);
                             _myGrids[gridY][6].set_gridHumans(1, &farmer);
                             break;
                         }
                         case 1:{
-                            Frankenstein frank(x, y);
+                            Frankenstein frank(930, y);
                             _myGrids[gridY][6].set_gridHumans(1, &frank);
                             break;
                         }
                         case 2:{
-                            Mob mob(x, y);
+                            Mob mob(930, y);
                             _myGrids[gridY][6].set_gridHumans(1, &mob);
                             break;
                         }
                         case 3:{
-                            Vampire vampire(x, y);
+                            Vampire vampire(930, y);
                             _myGrids[gridY][6].set_gridHumans(1, &vampire);
                             break;
                         }
                         case 4:{
-                            Bishop bishop(x, y);
+                            Bishop bishop(930, y);
                             _myGrids[gridY][6].set_gridHumans(1, &bishop);
                             break;
                         }
@@ -533,9 +539,17 @@ bool Game::placeRole(int i,uint32_t timer, int &money){
                     }
                 }
             }
-            RenderGame(i, money);
-            DrawVegetable();
-            DrawHuman();
+            else if(event.type == SDL_QUIT){
+                if(leaveAlert(&event)){
+                    endGame();
+                    close();
+                }
+                else{
+                    RenderPause();
+                }
+            }
+            RenderGame(i, money, timer);
+            showRole();
             screenShow();
             if(SDL_GetTicks() - timer > 1000 * 120){
                 isRunning = false;
@@ -545,9 +559,8 @@ bool Game::placeRole(int i,uint32_t timer, int &money){
                 break;
             screenShow();
         }
-        RenderGame(i,money);
-        DrawVegetable();
-        DrawHuman();
+        RenderGame(i,money, timer);
+        showRole();
         screenShow();
     }
     return true;
@@ -572,6 +585,7 @@ void Game::GamePause(int n){
             else if(event.type == SDL_QUIT){
                 if(leaveAlert(&event)){
                     endGame();
+                    close();
                 }
                 else{
                     RenderPause();
@@ -600,6 +614,8 @@ void Game::GameResult(bool GameWin,int n){
             else if(event.type == SDL_QUIT){
                 if(leaveAlert(&event)){
                     endGame();
+                    close();
+                    return;
                 }
                 else{
                     RenderResult();

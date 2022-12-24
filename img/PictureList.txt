@@ -1,8 +1,14 @@
 img/mus0.mp3
+img/MobMove.png 0
 img/MobMove.png 1
 img/FrankMove.png 2
 img/VampMove.png 3
 img/BishopMove.png 4
+img/MobAttack.png 6
+img/MobAttack.png 7
+img/FrankAttack.png 8
+img/VampAttack.png 9
+img/BishopAttack.png 10
 img/Welcome.png 0
 img/really.png 1
 img/menu.png 2
@@ -51,3 +57,6 @@ img/RoleMobN.png 47
 img/RoleFrankN.png 48
 img/RoleVampN.png 49
 img/RoleBishopN.png 50
+img/TimeBottom.png 51
+img/TimeLeft.png 52
+img/TimeTop.png 53

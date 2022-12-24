@@ -11,15 +11,20 @@ bool loadSrc(){
     loadMusic(mPath);
     for(int i = 0; i < 5; i++){
         dataIn >> path >> n;
-        if(!loadMedia(path, (Picture)(n)))
+        if(!loadMedia(path, (Movement)(n)))
+            success = false;
+    }
+    for(int i = 0; i < 5; i++){
+        dataIn >> path >> n;
+        if(!loadMedia(path, (Attack)(n)))
             success = false;
     }
     while(dataIn >> path >> n){
         if(!loadMedia(path, (Picture)(n)))
             success = false;
     }
-    char arr[5][7] = {};
     dataIn.close();
+    char arr[5][7] = {};
 
     dataIn.open("img/gameData.dat", std::ios::in);
     char c;

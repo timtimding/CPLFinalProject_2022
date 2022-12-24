@@ -2,6 +2,7 @@
 #define GRID_H
 
 #include "Character.h"
+#include "SDL_total.h"
 #include <iostream>
 
 class Grid{
@@ -38,7 +39,7 @@ public:
     ~Grid();
 
     ///maintain each round/fight on this grid
-    void gridFight();
+    int gridFight();
 
     ///get value
     bool get_isEmpty(){return _isEmpty;}
@@ -46,6 +47,7 @@ public:
     int get_pos_y(){return _pos_y;}
     int get_humanNum(){return _humanNum;}
     int get_vegetableNum(){return _vegetableNum;}
+    //bool coolDone(){return (SDL_GetTicks() - _coolStart > _cool)}
     Character* get_gridHumans(){return _gridHumans;}
     Character* get_gridVegetables(){return _gridVegetables;}
 
@@ -56,6 +58,7 @@ public:
     void c_move(){_pos_x -= _speed;}
     void set_humanNum(int humanNum){_humanNum = humanNum;}
     void set_vegetableNum(int vegetableNum){_vegetableNum = vegetableNum;}
+    void set_time(){_coolStart = SDL_GetTicks();}
     void set_gridHumans(int, Character*);
     void set_gridVegetables(int, Character*);
 
@@ -66,6 +69,7 @@ private:
     bool _isEmpty;
     int _pos_x;
     int _pos_y;
+    int _coolStart;
     int _speed;
     int _humanNum;
     int _vegetableNum;

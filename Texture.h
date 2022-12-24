@@ -22,9 +22,10 @@ enum Picture{
     GAMEON, PAUSE, HELP, PAUSELIST, LEAVE, RESTART, RESUME,
     GAMERESULT, BACKTOSELECTOR, AGAIN,
     ROLECORIANDER, ROLEGARLIC, ROLEPIMENT, ROLESPINACH, ROLEBEANS,
-    PLACEFARMER, PLACEMOB, PLACEFRANK, PLACEVAMP, PLACEBISHOP, ///placing role & standing
+    PLACEFARMER, PLACEMOB, PLACEFRANK, PLACEVAMP, PLACEBISHOP,
     ROLEFARMER, ROLEMOB, ROLEFRANK, ROLEVAMP, ROLEBISHOP,
     ROLEFARMERN, ROLEMOBN, ROLEFRANKN, ROLEPVAMPN, ROLEBISHOPN,
+    TIMEBOTTOM, TIMELEFT, TIMETOP,
     SAMPLE
 };
 enum Movement{
@@ -32,6 +33,7 @@ FARMERMOVE, MOBMOVE, FRANKRMOVE, VAMPMOVE, BISHOPMOVE,
 MOVEMENTTOTAL
 };
 enum Attack{
+    NOROLE,
     FARMERATTACK, MOBATTACK, FRANKATTACK, VAMPATTACK, BISHOPATTACK,
     CORIANDERATTACK, GARLICATTACK, PIMENTATTACK, SPINACHATTACK, BEANSATTACK,
     ATTACKTOTAL
@@ -61,7 +63,7 @@ void DrawMove(characterTag, int, int, int);
 
 void DrawRole(characterTag, int, int);
 
-void DrawAttack(Attack, int, int, int);
+void DrawAttack(characterTag, int, int, int);
 
 void showMoney(int, int, int);
 
@@ -75,15 +77,15 @@ void SoundSwitch(bool);
 
 bool loadMedia(std::string, Picture);
 
+bool loadMedia(std::string, Movement);
+
+bool loadMedia(std::string, Attack);
+
 bool loadMusic(const char *path);
 
 bool loadFont(const char *, int);
 
 void playMusic();
-
-void pauseMusic();
-
-void resumeMusic();
 
 bool handleEvent(SDL_Event *, Picture);
 
@@ -97,6 +99,8 @@ friend void DrawAttack(Attack, int, int, int);
 friend void showMoney(int, int, int);
 
 friend void DrawRole(characterTag, int, int);
+
+friend void DrawAttack(characterTag, int, int, int);
 
 public:
     lTexture();

@@ -42,11 +42,9 @@ class Game{
 
         void endGame();
 
-        void characterMove();
+        int characterMove();
 
-        void DrawVegetable();
-
-        void DrawHuman();
+        void showRole();
 };
 
 #endif // GAME_H

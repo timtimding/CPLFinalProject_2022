@@ -41,26 +41,32 @@ void RenderSetting(bool Sound){
 
 int cost[5] = {50, 100, 100, 150, 150};
 
-void RenderGame(int money){
+void RenderGame(int money, uint32_t timer){
     screenRefresh();
     Draw(GAMEON, 0, 0, 0, 0);
     Draw(PAUSE, SCREEN_WIDTH * 7/8, SCREEN_HEIGHT / 10, -1, -1);
     Draw(HELP, SCREEN_WIDTH * 7/8 + 90, SCREEN_HEIGHT / 10, -1, -1);
     for(int i = 0; i < 5; i++)
-        Draw( money / 5 >= cost[i] ? (Picture)(ROLEFARMER + i) : (Picture)(ROLEFARMERN + i), SCREEN_WIDTH -90, SCREEN_HEIGHT /4 + i* 95, -1, -1);
-    showMoney(money / 5, SCREEN_WIDTH -90, SCREEN_HEIGHT / 4 + 5 * 95);
+        Draw( money / 4 >= cost[i] ? (Picture)(ROLEFARMER + i) : (Picture)(ROLEFARMERN + i), SCREEN_WIDTH -90, SCREEN_HEIGHT /4 + i* 95, -1, -1);
+    Draw((Picture)(TIMEBOTTOM), SCREEN_WIDTH / 5, SCREEN_HEIGHT * 14 / 15, -1, -1);
+    Draw(TIMELEFT, 0, timer, -2, -2);
+    Draw((Picture)(TIMETOP), SCREEN_WIDTH / 5, SCREEN_HEIGHT * 14 / 15, -1, -1);
+    showMoney(money / 4, SCREEN_WIDTH -90, SCREEN_HEIGHT / 4 + 5 * 95);
 }
 
-void RenderGame(int n, int money){
+void RenderGame(int n, int money, uint32_t timer){
     screenRefresh();
     Draw(GAMEON, 0, 0, 0, 0);
     Draw(PAUSE, SCREEN_WIDTH * 7/8, SCREEN_HEIGHT / 10, -1, -1);
     Draw(HELP, SCREEN_WIDTH * 7/8 + 90, SCREEN_HEIGHT / 10, -1, -1);
     for(int i = 0; i < 5; i++)
-        Draw( money / 5 >= cost[i] ? (Picture)(ROLEFARMER + i): (Picture)(ROLEFARMERN + i), SCREEN_WIDTH -90, SCREEN_HEIGHT /4 + i* 95, -1, -1);
+        Draw( money / 4 >= cost[i] ? (Picture)(ROLEFARMER + i): (Picture)(ROLEFARMERN + i), SCREEN_WIDTH -90, SCREEN_HEIGHT /4 + i* 95, -1, -1);
+    Draw((Picture)(TIMEBOTTOM), SCREEN_WIDTH / 5, SCREEN_HEIGHT * 14 / 15, -1, -1);
+    Draw(TIMELEFT, 0, timer, -2, -2);
+    Draw((Picture)(TIMETOP), SCREEN_WIDTH / 5, SCREEN_HEIGHT * 14 / 15, -1, -1);
     int x, y;
     SDL_GetMouseState(&x, &y);
-    showMoney(money / 5, SCREEN_WIDTH -90, SCREEN_HEIGHT / 4 + 5 * 95);
+    showMoney(money / 4, SCREEN_WIDTH -90, SCREEN_HEIGHT / 4 + 5 * 95);
     Draw((Picture)(PLACEFARMER + n), x - 50, y - 144 , 100, 144);
 }
 

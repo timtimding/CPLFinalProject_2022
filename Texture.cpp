@@ -39,12 +39,15 @@ void setSoundLoud(int n){
 }
 
 void SoundSwitch(bool s){
-    int temp;
     SoundOn = s;
-    if(!s)
-        temp = Mix_VolumeMusic(0);
-    else
-        temp = Mix_VolumeMusic(SoundLoud);
+    if(!s){
+        Mix_VolumeMusic(0);
+        Mix_PauseMusic();
+    }
+    else{
+        Mix_VolumeMusic(SoundLoud);
+        Mix_ResumeMusic();
+    }
 }
 
 bool leaveAlert(SDL_Event *e){
@@ -63,7 +66,6 @@ bool leaveAlert(SDL_Event *e){
                     return true;
                     break;
                 case SDLK_n:
-                    std::cout << "I dont wanna leave" << std::endl;
                     screenRefresh();
                     return false;
                     break;
@@ -144,7 +146,7 @@ void close()
     //for(int i = 0; i < TOTAL; i++)
     //    MovementSet[i].free();
 
-    TTF_CloseFont( gFont );
+    TTF_CloseFont(gFont);
 	gFont = NULL;
 	Mix_FreeMusic(gMusic);
 	gMusic = NULL;
@@ -189,7 +191,6 @@ bool handleEvent(SDL_Event *e, Picture n){
         case BACKBUTTON:
             if(x <= SCREEN_WIDTH / 2 + TextureSet[n].getWidth() / 2 && x >= SCREEN_WIDTH / 2 - TextureSet[n].getWidth() / 2 && \
                 y >= SCREEN_HEIGHT *4 / 5 - TextureSet[n].getHeight() / 2 && y <= SCREEN_HEIGHT * 4 / 5 + TextureSet[n].getHeight() / 2){
-                std::cout << "Clicked" << std::endl;
                 return true;
             }
             else
@@ -357,17 +358,18 @@ void DrawGrayScreen(){
     SDL_SetRenderDrawColor( gRenderer, 0, 0, 0, 255 );
 }
 
-void DrawMove(characterTag n, int x, int y, int f){     ///f-> frame (which frame, 0, 1, 2 or 3)
-    SDL_Rect renderQuad = {x - MovementSet[n].getWidth() / 2, y - MovementSet[n].getHeight() / 2, \
-    144 * MovementSet[n].getWidth() / MovementSet[n].getHeight() , 144};
+void DrawMove(characterTag c, int x, int y, int f){
+    int n = c - 6;
+    SDL_Rect renderQuad = {x - 144 * MovementSet[n].getWidth() / MovementSet[n].getHeight() / 8, y - 100, \
+    144 * 2 * MovementSet[n].getHeight() / MovementSet[n].getWidth() , 144};
     SDL_Rect clip = {f * MovementSet[n].getWidth() / 4, 0, MovementSet[n].getWidth() / 4, MovementSet[n].getHeight()};
     SDL_RenderCopy( gRenderer, MovementSet[n].gTexture, &clip, &renderQuad );
-    std::cout << "Animation!" << std::endl;
 }
 
-void DrawAttack(Attack n, int x, int y, int f){   ///f-> frame (which frame, 0 or 1)
-    SDL_Rect renderQuad = { x * 100 +100, y * 100 + 20, 144 * MovementSet[n].getWidth() / MovementSet[n].getHeight() , 144};
-    SDL_Rect clip = {f * AttackSet[n].getWidth() / 4, 0, AttackSet[n].getWidth() / 4, AttackSet[n].getHeight()};
+void DrawAttack(characterTag n, int x, int y, int f){
+    SDL_Rect renderQuad = { x - 144 * AttackSet[n].getWidth() / AttackSet[n].getHeight() / 4, y - 100, \
+    144 * AttackSet[n].getWidth() / 2 / AttackSet[n].getHeight(), 144};
+    SDL_Rect clip = {f * AttackSet[n].getWidth() / 2, 0, AttackSet[n].getWidth() / 2, AttackSet[n].getHeight()};
     SDL_RenderCopy( gRenderer, AttackSet[n].gTexture, &clip, &renderQuad );
 }
 
@@ -411,6 +413,12 @@ void Draw(Picture n, int x, int y, int w, int h){
                     renderQuad.w = TextureSet[SOUNDBAR].getWidth() * SoundLoud / 128;
                     renderQuad.h = TextureSet[n].getHeight();
                     break;
+                case TIMELEFT:
+                    renderQuad.x = SCREEN_WIDTH / 5 - TextureSet[n].getWidth() / 2;
+                    renderQuad.w = TextureSet[n].getWidth() * (1 -  double(SDL_GetTicks() - renderQuad.y) / 120 / 1000);
+                    renderQuad.y =  SCREEN_HEIGHT * 14 / 15 - TextureSet[n].getHeight() / 2;
+                    renderQuad.h = TextureSet[n].getHeight();
+                    break;
                 default:
                     break;
             }
@@ -438,7 +446,7 @@ void setSound(SDL_Event *e){
                 SDL_GetMouseState(&x, &y);
                 if(x > SCREEN_WIDTH / 2 - TextureSet[SOUNDBAR].getWidth() / 2 && x < SCREEN_WIDTH / 2 + TextureSet[SOUNDBAR].getWidth() / 2){
                     SoundLoud = 128 * (x - SCREEN_WIDTH / 2 + TextureSet[SOUNDBAR].getWidth() / 2) / TextureSet[SOUNDBAR].getWidth();
-                    SoundSwitch(SoundOn);
+                    Mix_VolumeMusic(SoundLoud);
                     RenderSetting(SoundOn);
                     std::cout << SoundLoud << std::endl;
                 }
@@ -453,22 +461,15 @@ void clickSetSound(SDL_Event *e){
     SDL_GetMouseState(&x, &y);
     SoundLoud = 128 * (x - SCREEN_WIDTH / 2 + TextureSet[SOUNDBAR].getWidth() / 2) / TextureSet[SOUNDBAR].getWidth();
     std::cout << SoundLoud << std::endl;
+    Mix_VolumeMusic(SoundLoud);
     RenderSetting(IsSound());
 }
 
 void playMusic(){
-    std::cout << Mix_PlayMusic(gMusic, -1) << std::endl;
-    printf("%s\n", Mix_GetError());
-}
-
-void pauseMusic(){
-    Mix_PauseMusic();
-    std::cout << "Music Paused!" << std::endl;
-}
-
-void resumeMusic(){
-    Mix_ResumeMusic();
-    std::cout << "Music Resumed!" << std::endl;
+    Mix_VolumeMusic(SoundLoud);
+    Mix_PlayMusic(gMusic, -1);
+    if(!IsSound())
+        Mix_PauseMusic();
 }
 
 lTexture::lTexture(){
@@ -522,6 +523,24 @@ bool loadMedia(std::string path, Picture n)
 {
     bool success = true;
     if(!TextureSet[n].loadFromFile( path ))
+        success = false;
+    if(!success)
+        std::cout << path << "error" << std::endl;
+	return success;
+}
+bool loadMedia(std::string path, Movement n)
+{
+    bool success = true;
+    if(!MovementSet[n].loadFromFile( path ))
+        success = false;
+    if(!success)
+        std::cout << path << "error" << std::endl;
+	return success;
+}
+bool loadMedia(std::string path, Attack n)
+{
+    bool success = true;
+    if(!AttackSet[n].loadFromFile( path ))
         success = false;
     if(!success)
         std::cout << path << "error" << std::endl;

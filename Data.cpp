@@ -45,7 +45,7 @@ int Data::get_pos_x(){return _pos_x;}
 int Data::get_pos_y(){return _pos_y;}
 int Data::get_cool(){return _cool;}
 int Data::coolRemain(){return (_cool - (SDL_GetTicks() - _coolStart));}
-bool Data::coolDone(){return (SDL_GetTicks() - _coolStart > _cool);}
+bool Data::coolDone(){return (SDL_GetTicks() - _coolStart > _cool);std::cout << (SDL_GetTicks() - _coolStart);}
 
 
 //void Data::modify_tag(char* tag){_tag = tag;}
@@ -55,6 +55,7 @@ void Data::modify_speed(int delta){_speed += delta;}
 void Data::modify_pos_x(int delta){_pos_x += delta;}
 void Data::modify_pos_y(int delta){_pos_y += delta;}
 void Data::c_move(){_pos_x -= _speed;}
+void Data::modify_coolStart(){_coolStart -= _cool;}
 
 //void Data::set_tag(char* tag){_tag = tag;}
 void Data::set_attack(int attack){_attack = attack;}

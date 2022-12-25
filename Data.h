@@ -45,6 +45,7 @@ public:
     void modify_speed(int);
     void modify_pos_x(int);
     void modify_pos_y(int);
+    void modify_coolStart();
     void c_move();
 
     ///set value
@@ -77,7 +78,7 @@ private:
     int _speed;
     int _pos_x;
     int _pos_y;
-    int _cool;
+    uint32_t _cool;
     uint32_t _coolStart;
 };
 

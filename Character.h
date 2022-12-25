@@ -2,7 +2,7 @@
 #define CHARACTER_H
 
 #include "Data.h"
-
+#include <iostream>
 
 ///香菜, 大蒜, 青椒, 菠菜, 三色豆, 農夫, 科學怪人, 暴民, 主教, 吸血鬼
 enum characterTag {BLANK, CORIANDER, GARLIC, PIMENT, SPINACH, BEANS, FARMER, FRANKENSTEIN, MOB, VAMPIRE, BISHOP};

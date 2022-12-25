@@ -13,8 +13,12 @@ int frameRate = 60;
 
 uint32_t frameDelay = 1000 / frameRate;
 
-void Game::endGame(){
-    isRunning = false;
+void Game::gameInit(){
+    for(int i = 0; i < 5; i++)
+        for(int j = 0; j < 7; j++){
+            _myGrids[i][j].set_gridHumans(0, NULL);
+            _myGrids[i][j].set_gridVegetables(0, NULL);
+        }
 }
 
 void Game::showRole(){
@@ -22,58 +26,38 @@ void Game::showRole(){
     frameCount++;
     for(int i = 0; i < 5; i++)
         for(int j = 0; j < 7; j++){
-            if(_myGrids[i][j].get_vegetableNum() > 0){/*
-                if(_myGrids[i][j].get_humanNum() > 0){
-                    if(_myGrids[i][j].get_gridVegetables()[0].get_data().coolRemain() < 150)
-                        DrawAttack(_myGrids[i][j].get_gridVegetables()[0].get_tag(), 241 + j * 114, 144 + i * 108, 1);
-                    else if(_myGrids[i][j].get_gridVegetables()[0].get_data().coolRemain() < 300)
-                        DrawAttack(_myGrids[i][j].get_gridVegetables()[0].get_tag(), 241 + j * 114, 144 + i * 108 , 0);
-                    else
-                        DrawRole(_myGrids[i][j].get_gridVegetables()[0].get_tag(), 241 + j * 114, 144 + i * 108 );
-                }
-            else*/
+            if(_myGrids[i][j].get_vegetableNum() > 0)
+                if(_myGrids[i][j].get_humanNum() == 0 || _myGrids[i][j].get_gridVegetables()[0].get_data().coolRemain() > 300){
                 DrawRole(_myGrids[i][j].get_gridVegetables()[0].get_tag(), 241 + j * 114, 144 + i * 108 );
             }
-
             for(int k = 0; k < _myGrids[i][j].get_humanNum(); k++){
                 if(_myGrids[i][j].get_vegetableNum() > 0){
                     if(_myGrids[i][j].get_gridHumans()[k].get_data().coolRemain() < 150)
-                        DrawAttack(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 50, \
+                        DrawAttack(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 20, \
                         160 + i * 108 + ( k - 2) * 5, 1);
                     else if(_myGrids[i][j].get_gridHumans()[k].get_data().coolRemain() < 300)
-                        DrawAttack(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 50, \
+                        DrawAttack(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 20, \
                         160 + i * 108 + ( k - 2) * 5, 0);
                     else
                         DrawRole(_myGrids[i][j].get_gridHumans()[k].get_tag(), \
-                        _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 50, 160 + i * 108 + ( k - 2) * 5);
+                        _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 20, 160 + i * 108 + ( k - 2) * 5);
                 }
-                else if( _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() <= 200 )
+                else if( _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() <= 200)
                     DrawRole(_myGrids[i][j].get_gridHumans()[k].get_tag(), \
-                    _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 50, 160 + i * 108 + ( k - 2) * 5);
+                    _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 20, 160 + i * 108 + ( k - 2) * 5);
                 else
-                    DrawMove(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 50, \
+                    DrawMove(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 20, \
                     160 + i * 108 + ( k - 2) * 5, ((frameCount + _myGrids[i][j].get_gridHumans()[k].get_tag()) / 10) % 4 );
             }
+            if(_myGrids[i][j].get_vegetableNum() > 0 && _myGrids[i][j].get_humanNum() > 0 && _myGrids[i][j].get_gridVegetables()[0].get_data().coolRemain() <= 300){
+                if(_myGrids[i][j].get_gridVegetables()[0].get_data().coolRemain() < 150)
+                    DrawAttack(_myGrids[i][j].get_gridVegetables()[0].get_tag(), 241 + j * 114, 144 + i * 108, 1);
+                else
+                    DrawAttack(_myGrids[i][j].get_gridVegetables()[0].get_tag(), 241 + j * 114, 144 + i * 108 , 0);
+            }
         }
-
+    screenShow();
 }
-
-/*{
-    static int frameCount = 0;
-    frameCount++;
-    for(int i = 0; i < 5; i++)
-        for(int j = 0; j < 7; j++)
-            for(int k = 0; k < _myGrids[i][j].get_humanNum(); k++)
-                if(i > 0){
-    std::cout << "In";
-                    DrawMove(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x(), \
-                        _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_y(), (frameCount + _myGrids[i][j].get_gridHumans()[k].get_tag()) / 4 % 4);
-
-                }
-                else{
-                    DrawRole(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x(), \
-                        _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_y());}
-}*/
 
 void SetProgress(int num, int Pro){
     GameProgress[num] = Pro;
@@ -82,11 +66,6 @@ void SetProgress(int num, int Pro){
 int& GetProgress(){
     return *GameProgress;
 }
-
-        /*for(int i = 0; i < 5; i++)
-            for(int j = 0; j < 7; j++){
-                _myGrids[i][j].gridFight();
-            }*/
 
 int Game::characterMove(){
     int vegetableKill = 0;
@@ -179,6 +158,7 @@ void Game::initialize(){
     if(!init() || !loadSrc() || !loadFonts()){
         printf("Initializer error!\n");
         close();
+        return;
     }
 }
 
@@ -188,11 +168,12 @@ void Game::startSurface(){
         while(SDL_PollEvent(&event) != 0){
             if(event.type == SDL_MOUSEBUTTONUP || event.type == SDL_KEYUP){
                 this->mainMenu();
-                RenderStartSurface();
             }
             else if(event.type == SDL_QUIT){
                 if(leaveAlert(&event)){
-                    endGame();
+                    close();
+                    isRunning = false;
+                    return;
                 }
                 else
                     RenderStartSurface();
@@ -229,7 +210,9 @@ void Game::mainMenu(){
             else if(event.type == SDL_QUIT)
             {
                 if(leaveAlert(&event)){
-                    endGame();
+                    close();
+                    isRunning = false;
+                    return;
                 }else
                     RenderMenu();
             }
@@ -267,8 +250,9 @@ void Game::Settings(){
             }
             else if(event.type == SDL_QUIT){
                 if(leaveAlert(&event)){
-                    endGame();
                     close();
+                    isRunning = false;
+                    return;
                 }
                 else{
                     RenderSetting(IsSound());
@@ -291,7 +275,9 @@ void Game::Tutorial(){
             }
             else if(event.type == SDL_QUIT){
                 if(leaveAlert(&event)){
-                    endGame();
+                    close();
+                    isRunning = false;
+                    return;
                 }
                 else{
                     RenderTutorial();
@@ -322,7 +308,9 @@ void Game::Select(){
             }
             else if(event.type == SDL_QUIT){
                 if(leaveAlert(&event)){
-                    endGame();
+                    close();
+                    isRunning = false;
+                    return;
                 }
                 else{
                     RenderTutorial();
@@ -333,16 +321,14 @@ void Game::Select(){
 }
 
 void Game::GameOn(int n){
+    gameInit();
     int money = 0;
     bool GameWin = false, ending = false;
-    uint32_t startTime, frameTick, timeLeft, pauseTime;
-    RenderGame(money, startTime);
-    startTime = SDL_GetTicks();
     char c;
     std::ifstream inputFile;
     inputFile.open("img/gameData.dat", std::ios::in);
     for(int i = 0; i < n; i++)
-        for(int j = 0; j < 5; j++)
+        for(int j = 0; j < 6; j++)
             inputFile.ignore(20, '\n');
     for(int i=0;i<5;i++){
         for(int j=0;j<7;j++){
@@ -381,97 +367,100 @@ void Game::GameOn(int n){
         }
         inputFile.ignore(20, '\n');
     }
-    bool isMoved = false;
+    gameTimer gt;
+    RenderGame(money, gt.getStartTime());
+    screenShow();
+    bool isMoved = false, framed = false;
     while(isRunning){
         if(money < 3200)
             money++;
         money += 80 * characterMove();
-        RenderGame(money, startTime);
-        showRole();
-        screenShow();
+        gt.tick();
         isMoved = true;
+
         while(SDL_PollEvent(&event) != 0){
             if(isMoved)
                 isMoved = false;
             else{
-                RenderGame(money, startTime);
+                if(money < 3200)
+                    money++;
                 money += 80 * characterMove();
-                showRole();
-                screenShow();
+                gt.tick();
             }
-            if(money < 4000)
-                money++;
-            frameTick = SDL_GetTicks();
-            //TEST
-            if(event.type == SDL_KEYDOWN)
-            {
-                if(event.key.keysym.sym == SDLK_SPACE)
-                {
-                    GameWin = true;
-                    isRunning = false;
-                    break;
-                }
-                else if(event.key.keysym.sym == SDLK_q)
-                {
-                    GameWin = false;
-                    isRunning = false;
-                    break;
-                }
-            }//TEST
 
             if(event.type == SDL_MOUSEBUTTONUP)
             {
                 if(handleEvent(&event, PAUSE))
                 {
-                    pauseTime = SDL_GetTicks();
+                    gt.pauseRec();
                     this -> GamePause(n);
-                    startTime += (SDL_GetTicks() - pauseTime);
-                    RenderGame(money, startTime);
+                    gt.pauseUpdate();
+                    RenderGame(money, gt.getStartTime());
                     showRole();
-                    screenShow();
                 }
                 else if(handleEvent(&event, HELP))
                 {
+                    gt.pauseRec();
                     this -> Tutorial();
-                    RenderGame(money, startTime);
+                    RenderGame(money, gt.getStartTime());
+                    gt.pauseUpdate();
                     showRole();
-                    screenShow();
                 }
                 for(int i = 0; i < 5; i++){
                     if(money >= arrMoney[i] * 5 && handleEvent(&event, (Picture)(ROLEFARMER + i))){
-                        if(placeRole(i, startTime, money))
+                        if(placeRole(i, &gt, money))
                             money -= arrMoney[i] * 4;
                     }
                 }
             }
             else if(event.type == SDL_QUIT){
+                gt.pauseRec();
                 if(leaveAlert(&event)){
-                    endGame();
-                    ending = true;
+                    close();
+                    isRunning = false;
+                    return;
                 }
+                gt.pauseUpdate();
             }
             int total_vegetableNum = 0;
             for(int i = 0; i < 5; i++)
                 for(int j = 0;j< 7; j++)
                     total_vegetableNum += _myGrids[i][j].get_vegetableNum();
-            if(total_vegetableNum==0 && SDL_GetTicks() - startTime <= 1000*120){
+            if(total_vegetableNum==0 && !gt.timeOver()){
                 isRunning = false;
                 GameWin = true;
             }
-            timeLeft = SDL_GetTicks() - frameTick;
-            if(timeLeft < frameDelay)
-                SDL_Delay(frameDelay - timeLeft);
-            RenderGame(money, startTime);
+            else if(gt.timeOver()){
+                isRunning = false;
+                GameWin = false;
+            }
+
+            if(gt.tickLeft() > 0)
+                SDL_Delay(gt.tickLeft());
+            RenderGame(money, gt.getStartTime());
             showRole();
-            screenShow();
+            framed = true;
         }
-        if(SDL_GetTicks() - startTime >= 1000*120){
+        int total_vegetableNum = 0;
+        for(int i = 0; i < 5; i++)
+            for(int j = 0;j< 7; j++)
+                total_vegetableNum += _myGrids[i][j].get_vegetableNum();
+        if(total_vegetableNum==0 && !gt.timeOver()){
+            isRunning = false;
+            GameWin = true;
+        }
+        else if(gt.timeOver()){
                 isRunning = false;
                 GameWin = false;
         }
-        RenderGame(money, startTime);
-        showRole();
-        screenShow();
+        if(framed)
+            framed = false;
+        else{
+            if(gt.tickLeft() > 0)
+                SDL_Delay(gt.tickLeft());
+            RenderGame(money, gt.getStartTime());
+            showRole();
+        }
     }
     if(ending)
         return;
@@ -480,10 +469,10 @@ void Game::GameOn(int n){
     return;
 }
 
-bool Game::placeRole(int i,uint32_t timer, int &money){
-    bool isMoved = false;
-    bool isPlacing = true;
-    RenderGame(i, money, timer);
+bool Game::placeRole(int i,gameTimer *gt, int &money){
+    bool isMoved = false, framed = false;
+    bool isPlacing = true, GameWin = false;;
+    RenderGame(i, money, gt->getStartTime());
     showRole();
     while(isPlacing){
         if(money < 3200)
@@ -505,7 +494,7 @@ bool Game::placeRole(int i,uint32_t timer, int &money){
                 gridY = (y - 95) / 108;
                 y = gridY * 108 + 144;
                 isPlacing = false;
-                if(gridY < 0 || gridY >= 5 || x > 960 || x < 500)
+                if(gridY < 0 || gridY >= 5 || x > 980 || x < 500)
                     return false;
                 else{
                     switch(i){
@@ -540,28 +529,60 @@ bool Game::placeRole(int i,uint32_t timer, int &money){
                 }
             }
             else if(event.type == SDL_QUIT){
+                gt->pauseRec();
                 if(leaveAlert(&event)){
-                    endGame();
                     close();
+                    isRunning = false;
+                    return 0;
                 }
                 else{
                     RenderPause();
                 }
+                gt->pauseUpdate();
             }
-            RenderGame(i, money, timer);
+            int total_vegetableNum = 0;
+            for(int i = 0; i < 5; i++)
+                for(int j = 0;j< 7; j++)
+                    total_vegetableNum += _myGrids[i][j].get_vegetableNum();
+            if(total_vegetableNum==0 && !gt->timeOver()){
+                isRunning = false;
+                GameWin = true;
+            }
+            else if(gt->timeOver()){
+                isRunning = false;
+                GameWin = false;
+            }
+            if(gt->tickLeft() > 0)
+                SDL_Delay(gt->tickLeft());
+            RenderGame(i, money, gt->getStartTime());
             showRole();
-            screenShow();
-            if(SDL_GetTicks() - timer > 1000 * 120){
+            if(gt->timeOver()){
                 isRunning = false;
                 return false;
             }
             if(!isRunning)
                 break;
-            screenShow();
         }
-        RenderGame(i,money, timer);
-        showRole();
-        screenShow();
+        int total_vegetableNum = 0;
+        for(int i = 0; i < 5; i++)
+            for(int j = 0;j< 7; j++)
+                total_vegetableNum += _myGrids[i][j].get_vegetableNum();
+        if(total_vegetableNum==0 && !gt->timeOver()){
+            isRunning = false;
+            GameWin = true;
+        }
+        else if(gt->timeOver()){
+                isRunning = false;
+                GameWin = false;
+        }
+        if(framed)
+            framed = false;
+        else{
+            if(gt->tickLeft() > 0)
+                SDL_Delay(gt->tickLeft());
+            RenderGame(i, money, gt->getStartTime());
+            showRole();
+        }
     }
     return true;
 }
@@ -584,8 +605,9 @@ void Game::GamePause(int n){
             }
             else if(event.type == SDL_QUIT){
                 if(leaveAlert(&event)){
-                    endGame();
                     close();
+                    isRunning = false;
+                    return;
                 }
                 else{
                     RenderPause();
@@ -596,7 +618,7 @@ void Game::GamePause(int n){
 }
 
 void Game::GameResult(bool GameWin,int n){
-    RenderResult();
+    RenderResult(GameWin);
     SDL_Delay(2000);
     if(GameProgress[n + 1] == 0)
         if(GameWin)
@@ -613,12 +635,12 @@ void Game::GameResult(bool GameWin,int n){
             }
             else if(event.type == SDL_QUIT){
                 if(leaveAlert(&event)){
-                    endGame();
                     close();
+                    isRunning = false;
                     return;
                 }
                 else{
-                    RenderResult();
+                    RenderResult(GameWin);
                 }
             }
         }

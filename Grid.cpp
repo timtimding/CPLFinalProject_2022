@@ -1,5 +1,5 @@
 #include "Grid.h"
-#include <iostream>
+
 ///default constructor
 Grid::Grid(){
     _isEmpty = true;

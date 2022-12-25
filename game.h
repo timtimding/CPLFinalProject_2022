@@ -10,6 +10,7 @@
 #include "Grid.h"
 #include <fstream>
 #include <iomanip>
+#include "gameTimer.h"
 
 int & GetProgress();
 
@@ -34,17 +35,18 @@ class Game{
 
         void GameOn(int);
 
-        bool placeRole(int , uint32_t, int &);
+        bool placeRole(int , gameTimer*, int &);
 
         void GamePause(int);
 
         void GameResult(bool, int);
 
-        void endGame();
+        void gameInit();
 
         int characterMove();
 
         void showRole();
 };
+
 
 #endif // GAME_H

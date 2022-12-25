@@ -18,7 +18,7 @@ void RenderGame(int, int, uint32_t);
 
 void RenderRoles();
 
-void RenderResult();
+void RenderResult(bool);
 
 void RenderPause();
 

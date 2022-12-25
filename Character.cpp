@@ -1,5 +1,4 @@
 #include "Character.h"
-#include <iostream>
 ///constructor
 ///default constructor
 Character::Character(){
@@ -80,6 +79,7 @@ Coriander::Coriander(int pos_x, int pos_y){
     _data.set_pos_y(pos_y);
     _data.set_cool(3000);
     _data.set_coolStart();
+    _data.modify_coolStart();
     _raceTag = VEGETABLE;
     _tag = CORIANDER;
 }
@@ -91,6 +91,7 @@ Garlic::Garlic(int pos_x, int pos_y){
     _data.set_pos_y(pos_y);
     _data.set_cool(3000);
     _data.set_coolStart();
+    _data.modify_coolStart();
     _raceTag = VEGETABLE;
     _tag = GARLIC;
 }
@@ -102,6 +103,7 @@ Piment::Piment(int pos_x, int pos_y){
     _data.set_pos_y(pos_y);
     _data.set_cool(2000);
     _data.set_coolStart();
+    _data.modify_coolStart();
     _raceTag = VEGETABLE;
     _tag = PIMENT;
 }
@@ -113,6 +115,7 @@ Spinach::Spinach(int pos_x, int pos_y){
     _data.set_pos_y(pos_y);
     _data.set_cool(2000);
     _data.set_coolStart();
+    _data.modify_coolStart();
     _raceTag = VEGETABLE;
     _tag = SPINACH;
 }
@@ -124,6 +127,7 @@ Beans::Beans(int pos_x, int pos_y){
     _data.set_pos_y(pos_y);
     _data.set_cool(4000);
     _data.set_coolStart();
+    _data.modify_coolStart();
     _raceTag = VEGETABLE;
     _tag = BEANS;
 }
@@ -136,6 +140,7 @@ Farmer::Farmer(int pos_x, int pos_y){
     _data.set_pos_y(pos_y);
     _data.set_cool(4000);
     _data.set_coolStart();
+    _data.modify_coolStart();
     _raceTag = HUMAN;
     _tag = FARMER;
 }
@@ -148,6 +153,7 @@ Frankenstein::Frankenstein(int pos_x, int pos_y){
     _data.set_pos_y(pos_y);
     _data.set_cool(2000);
     _data.set_coolStart();
+    _data.modify_coolStart();
     _raceTag = HUMAN;
     _tag = FRANKENSTEIN;
 }
@@ -160,6 +166,7 @@ Mob::Mob(int pos_x, int pos_y){
     _data.set_pos_y(pos_y);
     _data.set_cool(2000);
     _data.set_coolStart();
+    _data.modify_coolStart();
     _raceTag = HUMAN;
     _tag = MOB;
 }
@@ -172,18 +179,20 @@ Bishop::Bishop(int pos_x, int pos_y){
     _data.set_pos_y(pos_y);
     _data.set_cool(5000);
     _data.set_coolStart();
+    _data.modify_coolStart();
     _raceTag = HUMAN;
     _tag = BISHOP;
 }
 
 Vampire::Vampire(int pos_x, int pos_y){
     _data.set_attack(20);
-    _data.set_blood(30);
+    _data.set_blood(20);
     _data.modify_speed(4);
     _data.set_pos_x(pos_x);
     _data.set_pos_y(pos_y);
     _data.set_cool(300);
     _data.set_coolStart();
+    _data.modify_coolStart();
     _raceTag = HUMAN;
     _tag = VAMPIRE;
 }

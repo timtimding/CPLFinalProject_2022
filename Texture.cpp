@@ -219,7 +219,7 @@ bool handleEvent(SDL_Event *e, Picture n){
             break;
         case AGAIN:
             if(x >= SCREEN_WIDTH / 2 - 136 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH / 2 - 136 + TextureSet[n].getWidth() / 2 && \
-            y >= SCREEN_HEIGHT / 2 - TextureSet[n].getHeight() / 2 && y <= SCREEN_HEIGHT / 2 + TextureSet[n].getHeight() / 2)
+            y >= SCREEN_HEIGHT * 3 / 5 - TextureSet[n].getHeight() / 2 && y <= SCREEN_HEIGHT * 3 / 5 + TextureSet[n].getHeight() / 2)
                 return true;
             else
                 return false;
@@ -261,7 +261,7 @@ bool handleEvent(SDL_Event *e, Picture n){
             break;
         case BACKTOSELECTOR:
             if(x >= SCREEN_WIDTH / 2 + 100 - TextureSet[n].getWidth() / 2 && x <= SCREEN_WIDTH / 2 + 100 + TextureSet[n].getWidth() / 2 && \
-            y >= SCREEN_HEIGHT / 2 - TextureSet[n].getHeight() / 2 && y <= SCREEN_HEIGHT / 2 + TextureSet[n].getHeight() / 2)
+            y >= SCREEN_HEIGHT * 3 / 5 - TextureSet[n].getHeight() / 2 && y <= SCREEN_HEIGHT * 3 / 5 + TextureSet[n].getHeight() / 2)
                 return true;
             else
                 return false;

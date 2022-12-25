@@ -1,7 +1,4 @@
-#include <SDL.h>
-#include <stdio.h>
-#include <string>
-#include <iostream>
+#include "SDL_total.h"
 #include "Texture.h"
 #include "game.h"
 #include "fileManager.h"

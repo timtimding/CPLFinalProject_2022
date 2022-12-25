@@ -1,6 +1,7 @@
 #include "Rendering.h"
 void RenderStartSurface(){
     screenRefresh();
+    Draw(MENU, 0, 0, 0, 0);
     Draw(WELCOME, 0, 0, 0, 0);
     screenShow();
 }
@@ -16,7 +17,8 @@ void RenderMenu(){
 
 void RenderSelect(int n[]){
     screenRefresh();
-    Draw(SELECTOR, 0, 0, 0, 0);
+    Draw(MENU, 0, 0, 0, 0);
+    Draw(SELECTOR, SCREEN_WIDTH / 12, SCREEN_HEIGHT / 12, SCREEN_WIDTH * 5 / 6, SCREEN_HEIGHT * 5 / 6);
     for(int i = 0; i < 5; i++){
         if(n[i] == 1)
             Draw((Picture)(LEVEL1 + i), SCREEN_WIDTH / 2 + (i - 2) * 200, SCREEN_HEIGHT / 2, -1, -1);
@@ -29,7 +31,8 @@ void RenderSelect(int n[]){
 
 void RenderSetting(bool Sound){
     screenRefresh();
-    Draw(SETTING, 0, 0, 0, 0);
+    Draw(MENU, 0, 0, 0, 0);
+    Draw(SETTING, SCREEN_WIDTH / 8, SCREEN_HEIGHT / 8, SCREEN_WIDTH * 3 / 4, SCREEN_HEIGHT * 3 / 4);
     Draw(( IsSound() ? SOUNDON : SOUNDOFF), SCREEN_WIDTH / 2, SCREEN_HEIGHT * 2 / 5, -1, -1);
     Draw(SOUNDBAR, SCREEN_WIDTH / 2, SCREEN_HEIGHT * 3 / 5, -1, -1);
     if(Sound)
@@ -70,16 +73,16 @@ void RenderGame(int n, int money, uint32_t timer){
     Draw((Picture)(PLACEFARMER + n), x - 50, y - 144 , 100, 144);
 }
 
-void RenderResult(){
-    screenRefresh();
+void RenderResult(bool win){
     Draw(SAMPLE, 0, 0, 0, 0);
-    Draw(AGAIN, SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, -1, -1);
-    Draw(BACKTOSELECTOR, SCREEN_WIDTH / 2 + 136, SCREEN_HEIGHT / 2, -1, -1);
+    Draw(win ? RESULTWIN : RESULTLOSE, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, -1, -1);
+    Draw(AGAIN, SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT * 3 / 5, -1, -1);
+    Draw(BACKTOSELECTOR, SCREEN_WIDTH / 2 + 136, SCREEN_HEIGHT * 3 / 5, -1, -1);
     screenShow();
 }
 
 void RenderPause(){
-    Draw(PAUSELIST, 0, 0, 0, 0);
+    Draw(PAUSELIST, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, -1, -1);
     for(int i = 0; i < 3; i++){
         Draw((Picture)(LEAVE + i), SCREEN_WIDTH / 2 + (i - 1) * 100, SCREEN_HEIGHT / 2, -1, -1);
     }
@@ -88,15 +91,14 @@ void RenderPause(){
 
 void RenderTutorial(){
     screenRefresh();
-    Draw(TUTORIAL, 0, 0, 0, 0);
+    Draw(MENU, 0, 0, 0, 0);
+    Draw(TUTORIAL, SCREEN_WIDTH / 10, SCREEN_HEIGHT  / 10, SCREEN_WIDTH * 4 / 5, SCREEN_HEIGHT * 4 / 5);
     Draw(BACKBUTTON, SCREEN_WIDTH / 2, SCREEN_HEIGHT *4 / 5, -1, -1);
     screenShow();
 }
 
-void showRole(){
-}
-
 void ShowAlert(){
+    Draw(SAMPLE, 0, 0, 0, 0);
     Draw(ALERT, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
     screenShow();
 }

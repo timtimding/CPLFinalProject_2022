@@ -3,7 +3,7 @@
 bool loadSrc(){
     bool success = true;
     std::ifstream dataIn;
-    dataIn.open("img/PictureList.txt", std::ios::in);
+    dataIn.open("img/PictureList.dat", std::ios::in);
     std::string path;
     int n;
     dataIn >> path;
@@ -14,7 +14,7 @@ bool loadSrc(){
         if(!loadMedia(path, (Movement)(n)))
             success = false;
     }
-    for(int i = 0; i < 5; i++){
+    for(int i = 0; i < 10; i++){
         dataIn >> path >> n;
         if(!loadMedia(path, (Attack)(n)))
             success = false;

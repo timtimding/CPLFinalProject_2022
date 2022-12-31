@@ -1,17 +1,15 @@
 #include "game.h"
-Grid _myGrids[5][7];
+Grid Game::_myGrids[5][7];
 
 SDL_Event Game::event;
 
-bool isRunning = true;
+bool Game::isRunning = true;
+
+int  Game::frameCount = 0;
 
 int GameProgress[6] = {1, 1, 0, 0, 0, 1};
 
 int arrMoney[5] = {50, 100, 100, 150, 150};
-
-int frameRate = 60;
-
-uint32_t frameDelay = 1000 / frameRate;
 
 void Game::gameInit(){
     for(int i = 0; i < 5; i++)
@@ -22,7 +20,6 @@ void Game::gameInit(){
 }
 
 void Game::showRole(){
-    static int frameCount = 0;
     frameCount++;
     for(int i = 0; i < 5; i++)
         for(int j = 0; j < 7; j++){
@@ -33,21 +30,21 @@ void Game::showRole(){
             for(int k = 0; k < _myGrids[i][j].get_humanNum(); k++){
                 if(_myGrids[i][j].get_vegetableNum() > 0){
                     if(_myGrids[i][j].get_gridHumans()[k].get_data().coolRemain() < 150)
-                        DrawAttack(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 20, \
-                        160 + i * 108 + ( k - 2) * 5, 1);
+                        DrawAttack(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 10 - 20, \
+                        160 + i * 108 + ( k - 2) * 7, 1);
                     else if(_myGrids[i][j].get_gridHumans()[k].get_data().coolRemain() < 300)
-                        DrawAttack(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 20, \
-                        160 + i * 108 + ( k - 2) * 5, 0);
+                        DrawAttack(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 10 - 20, \
+                        160 + i * 108 + ( k - 2) * 7, 0);
                     else
                         DrawRole(_myGrids[i][j].get_gridHumans()[k].get_tag(), \
-                        _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 20, 160 + i * 108 + ( k - 2) * 5);
+                        _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 10 - 20, 160 + i * 108 + ( k - 2) * 7);
                 }
                 else if( _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() <= 200)
                     DrawRole(_myGrids[i][j].get_gridHumans()[k].get_tag(), \
-                    _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 20, 160 + i * 108 + ( k - 2) * 5);
+                    _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 10 - 20, 160 + i * 108 + ( k - 2) * 7);
                 else
-                    DrawMove(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 5 - 20, \
-                    160 + i * 108 + ( k - 2) * 5, ((frameCount + _myGrids[i][j].get_gridHumans()[k].get_tag()) / 10) % 4 );
+                    DrawMove(_myGrids[i][j].get_gridHumans()[k].get_tag(), _myGrids[i][j].get_gridHumans()[k].get_data().get_pos_x() + k * 10 - 20, \
+                    160 + i * 108 + ( k - 2) * 7, ((frameCount + _myGrids[i][j].get_gridHumans()[k].get_tag()) / 10) % 4 );
             }
             if(_myGrids[i][j].get_vegetableNum() > 0 && _myGrids[i][j].get_humanNum() > 0 && _myGrids[i][j].get_gridVegetables()[0].get_data().coolRemain() <= 300){
                 if(_myGrids[i][j].get_gridVegetables()[0].get_data().coolRemain() < 150)
@@ -68,6 +65,8 @@ int& GetProgress(){
 }
 
 int Game::characterMove(){
+    if(!(frameCount%10))
+        std::cout << this;
     int vegetableKill = 0;
     int totalSum = 0;
     for(int i = 0; i < 5; i++)

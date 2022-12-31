@@ -93,10 +93,16 @@ int Grid::gridFight(){
                     _gridHumans[i].attackEnemy(_gridVegetables[j]);
                     _gridHumans[i].get_data().set_coolStart();
                 }
-                if(_gridVegetables[i].get_data().coolDone()){
-                    _gridVegetables[j].attackEnemy(_gridHumans[i]);
-                    _gridVegetables[j].get_data().set_coolStart();
-                }
+            }
+        }
+        for(int i=0;i<_vegetableNum;i++){
+            if(_gridVegetables[i].get_data().coolDone()){
+                for(int k = 0; k < get_humanNum(); k++)
+                    if(_gridHumans[k].get_tag() != BLANK){
+                        _gridVegetables[i].attackEnemy(_gridHumans[k]);
+                        k = get_humanNum();
+                    }
+                _gridVegetables[i].get_data().set_coolStart();
             }
         }
         ///check alive
